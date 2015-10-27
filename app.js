@@ -4,12 +4,12 @@ const http = require('http'),
       fs = require('fs'),
       url = require('url'),
       path = require('path'),
-      io = require('socket.io')(http);
+      INDEX_HTML = './index.html';
 
+let app = http.createServer(handler);
+let io = require('socket.io')(app);
 
-const INDEX_HTML = './index.html';
-
-const server = http.createServer((req, res) => {
+function handler (req, res) {
   let uri = req.url;
   res.statusCode = 200;
   if(uri == "/") { 
@@ -31,12 +31,12 @@ const server = http.createServer((req, res) => {
   }else {
     res.end('url not exist');
   }
-});
+}
 
-io.of('/videos').on('connection', socket => {
+io.on('connection', socket => {
   socket.on('send:message', data => {
-    io.of('/videos').emit('send:message', data);
+    io.emit('send:message', data);
   });
 });
 
-server.listen(process.env.PORT || 1337);
+app.listen(process.env.PORT || 1337);
