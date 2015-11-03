@@ -6,9 +6,18 @@ const http = require('http'),
       path = require('path'),
       INDEX_HTML = './index.html';
 
+// criando o servidor
 let app = http.createServer(handler);
+/* 
+  essa variavel io representa o objeto que trabalha com
+  a bibliote de websocktes sockte.io, ele recebe com argumento
+  a variavel app  que por sua vez representa o servido, isso
+  é feito para que eles usem a mesma porta, e fiquem em 
+  sintonia
+*/
 let io = require('socket.io')(app);
 
+// hender do servidor 
 function handler (req, res) {
   let uri = req.url;
   res.statusCode = 200;
@@ -32,9 +41,16 @@ function handler (req, res) {
     res.end('url not exist');
   }
 }
-
+/*
+  io.on('args') essa função e chamada toda vez que um uma requisição e feita ao servidor
+  cara essa requisição receba um envendo "send:message" do socket que vem parametro
+  o o metodo io.emit devolvera esse evento junto com "data" os dados que foram passados
+  esse evento e passado para todos sockets ativos
+*/
 io.on('connection', socket => {
+  // socket escutando o event send:message
   socket.on('send:message', data => {
+    //io emitindo o evento para todos sockets conectdos
     io.emit('send:message', data);
   });
 });
